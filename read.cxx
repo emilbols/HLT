@@ -285,9 +285,13 @@ int read(){
 		data->GetEntry(i);
 		float lal = n_jetNSelectedTracks_;
 		DeepCSVProbb = DeepCSVProbb + DeepCSVProbbb;
-		//if(DeepCSVProbb < 0){continue;}
+		/*
+		if(DeepCSVProbb < 0){continue;}
+		if(OnDeepCSVProbb < 0){continue;}
+		*/
 		//if(!(OnTagVarCSV_jetNSecondaryVertices < TagVarCSV_jetNSecondaryVertices)){continue;}
 		OnDeepCSVProbb = 1-OnDeepCSVProbc-OnDeepCSVProbudsg;
+		//if(OnDeepCSVProbb == 0){continue;}
 		if(OnDeepCSVProbb > 1.1){OnDeepCSVProbb = -1;}
 		allevent++;
 		h_trackJetPtOffvsOn->Fill(trackJetPt,OntrackJetPt);
@@ -296,6 +300,7 @@ int read(){
 		h_DeepCSVprobcOffvsOn->Fill(DeepCSVProbc,OnDeepCSVProbc);
 		h_DeepCSVCSVcompOnline->Fill(OnDeepCSVProbb,OnCSVProbb);
 		h_DeepCSVCSVcompOffline->Fill(DeepCSVProbb,CSVProbb);
+
 		h_DeepCSVprobudsgOffvsOn->Fill(DeepCSVProbudsg,OnDeepCSVProbudsg);
 		h_DeepCSVprobb->Fill(DeepCSVProbb);
 		h_OnDeepCSVprobb->Fill(OnDeepCSVProbb);
@@ -734,13 +739,13 @@ gStyle->SetOptStat(0);
 	cd26->SetLogy();
 	cd26->Update();
 	TCanvas *cd27 = new TCanvas("cd27", "DeepCSVprobb",50,50,1000,800);
-	h_DeepCSVprobb->Rebin(5);	
+	h_DeepCSVprobb->Rebin(2);	
 	h_DeepCSVprobb->Draw("hist");
 	h_DeepCSVprobb->SetFillColor(2);
-	float scale11 = h_DeepCSVprobb->Integral(1,20);
+	float scale11 = h_DeepCSVprobb->Integral(1,50);
 	h_DeepCSVprobb->Scale(1/scale11);
-	h_OnDeepCSVprobb->Rebin(5);
-	float scale12 = h_OnDeepCSVprobb->Integral(1,20);	
+	h_OnDeepCSVprobb->Rebin(2);
+	float scale12 = h_OnDeepCSVprobb->Integral(1,50);	
 	h_OnDeepCSVprobb->Draw("E0 same");
 	h_OnDeepCSVprobb->SetMarkerStyle(20);
 	h_OnDeepCSVprobb->Scale(1/scale12);
@@ -839,7 +844,14 @@ gStyle->SetOptStat(0);
 	l.DrawLatex(0.15,0.81,"Online DeepCSV discriminator WP = 0.6");
 	cblah->Update();	
 
+	TCanvas *kop = new TCanvas("kop", "kop",50,50,1000,800);
+	h_all->Draw();
+	kop->Update();
 
+	TCanvas *kop1 = new TCanvas("kop1", "kop1",50,50,1000,800);
+	h_pass->Draw();
+	kop1->Update();
+	
 	TCanvas *cblah2 = new TCanvas("cblah2", "cblah2",50,50,1000,800);
 	h_eff2->Divide(h_pass2,h_all2,1,1);
 	h_eff2->SetNameTitle("CSV Turn on Curve", "CSV Turn on Curve");
