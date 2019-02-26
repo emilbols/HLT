@@ -25,9 +25,9 @@ void printcor(Double_t x){
 using namespace std;
 
 int read(){
-	TFile *ntfile = new TFile("../DeepNTuple_1p1MJets_changedDeepCSVVtxDef.root","READ");
+  	TFile *ntfile = new TFile("DeepNTuple_1p1MJets_changedDeepCSVVtxDef.root","READ");
 	//TFile *ntfile = new TFile("DeepNTuple_RunE_0p23.root","READ");
-  //	TFile *ntfile = new TFile("ntuple.root","READ");
+  	//TFile *ntfile = new TFile("ntuple.root","READ");
       	TTree *data = (TTree*)ntfile->Get("Ntupler/tree");
 	//TTree *data2 = (TTree*)ntfile2->Get("Ntupler/tree");
 	//TTree *data = (TTree*)ntfile->Get("deepntuplizer/tree");'
@@ -281,17 +281,35 @@ int read(){
 	double count1 = 0;
 	double count2 = 0;
 	Int_t nentries = data->GetEntries();
+	//cout << nentries << endl;
+	//Int_t nentries = 1000000;
+/*
+	float DeepCSVProbb2,DeepCSVProbbb2,OnDeepCSVProbc2,OnDeepCSVProbudsg2,OnDeepCSVProbb2;
+	data2->SetBranchAddress("DeepCSVProbb",&DeepCSVProbb2);
+	data2->SetBranchAddress("DeepCSVProbbb",&DeepCSVProbbb2);
+	data2->SetBranchAddress("OnDeepCSVProbc",&OnDeepCSVProbc2);
+	data2->SetBranchAddress("OnDeepCSVProbudsg",&OnDeepCSVProbudsg2);
+
+	for (Int_t i=0;i<nentries;i++) {
+		data2->GetEntry(i);
+		DeepCSVProbb2 = DeepCSVProbb2+DeepCSVProbbb2;
+		OnDeepCSVProbb2 = 1-OnDeepCSVProbudsg2-OnDeepCSVProbc2;
+		if(OnDeepCSVProbb2 > 1.1){OnDeepCSVProbb2 = -1;}
+		if(OnDeepCSVProbb2 > 0.6){
+			h_pass2->Fill(DeepCSVProbb2);
+		}
+		h_all2->Fill(DeepCSVProbb2);
+	}
+*/
 	for (Int_t i=0;i<nentries;i++) {
 		data->GetEntry(i);
 		float lal = n_jetNSelectedTracks_;
 		DeepCSVProbb = DeepCSVProbb + DeepCSVProbbb;
-		/*
-		if(DeepCSVProbb < 0){continue;}
-		if(OnDeepCSVProbb < 0){continue;}
-		*/
+		//if(vertexCategory != 1){continue;}
+		//if(OnvertexCategory != 1){continue;}
+
 		//if(!(OnTagVarCSV_jetNSecondaryVertices < TagVarCSV_jetNSecondaryVertices)){continue;}
 		OnDeepCSVProbb = 1-OnDeepCSVProbc-OnDeepCSVProbudsg;
-		//if(OnDeepCSVProbb == 0){continue;}
 		if(OnDeepCSVProbb > 1.1){OnDeepCSVProbb = -1;}
 		allevent++;
 		h_trackJetPtOffvsOn->Fill(trackJetPt,OntrackJetPt);
@@ -300,7 +318,6 @@ int read(){
 		h_DeepCSVprobcOffvsOn->Fill(DeepCSVProbc,OnDeepCSVProbc);
 		h_DeepCSVCSVcompOnline->Fill(OnDeepCSVProbb,OnCSVProbb);
 		h_DeepCSVCSVcompOffline->Fill(DeepCSVProbb,CSVProbb);
-
 		h_DeepCSVprobudsgOffvsOn->Fill(DeepCSVProbudsg,OnDeepCSVProbudsg);
 		h_DeepCSVprobb->Fill(DeepCSVProbb);
 		h_OnDeepCSVprobb->Fill(OnDeepCSVProbb);
@@ -308,10 +325,12 @@ int read(){
 		h_OnDeepCSVprobc->Fill(OnDeepCSVProbc);
 		h_DeepCSVprobudsg->Fill(DeepCSVProbudsg);
 		h_OnDeepCSVprobudsg->Fill(OnDeepCSVProbudsg);
+//0.8484
 		if(OnCSVProbb > 0.7){
 			h_pass2->Fill(CSVProbb);
 		}
 		h_all2->Fill(CSVProbb);
+//0.6324
 		if(OnDeepCSVProbb > 0.6){
 			h_pass->Fill(DeepCSVProbb);
 		}
@@ -368,6 +387,7 @@ int read(){
 			h_OntrackJetDistVal->Fill(OnTagVarCSVTrk_trackJetDistVal[n]);		
 		}
 		for(int n = 0; n < OnNStoredVertices; n++){
+		  if(NStoredVertices == 0){continue;}
 		  if(OnTagVarCSV_flightDistance2dSig[n] < 3.0){
 			h_OnDeepCSVprobbTest->Fill(OnDeepCSVProbb);
 		  }
@@ -645,10 +665,10 @@ gStyle->SetOptStat(0);
 	h_vertexNTracks->SetTitle("Number of Vertex Tracks offline and online");
 	h_vertexNTracks->Draw("hist");
 	h_vertexNTracks->SetFillColor(2);
-	h_vertexNTracks->Scale(1/scale9);
+	//h_vertexNTracks->Scale(1/scale9);
 	h_OnvertexNTracks->Draw("E0 same");
 	h_OnvertexNTracks->SetMarkerStyle(20);
-	h_OnvertexNTracks->Scale(1/scale10);
+	//h_OnvertexNTracks->Scale(1/scale10);
 	h_vertexNTracks->GetYaxis()->SetTitle("Normalized Event Count");
 	h_vertexNTracks->GetXaxis()->SetTitle("Number of Vertex Tracks");
 	legend->Draw();
@@ -739,13 +759,13 @@ gStyle->SetOptStat(0);
 	cd26->SetLogy();
 	cd26->Update();
 	TCanvas *cd27 = new TCanvas("cd27", "DeepCSVprobb",50,50,1000,800);
-	h_DeepCSVprobb->Rebin(2);	
+	h_DeepCSVprobb->Rebin(5);	
 	h_DeepCSVprobb->Draw("hist");
 	h_DeepCSVprobb->SetFillColor(2);
-	float scale11 = h_DeepCSVprobb->Integral(1,50);
+	float scale11 = h_DeepCSVprobb->Integral(1,20);
 	h_DeepCSVprobb->Scale(1/scale11);
-	h_OnDeepCSVprobb->Rebin(2);
-	float scale12 = h_OnDeepCSVprobb->Integral(1,50);	
+	h_OnDeepCSVprobb->Rebin(5);
+	float scale12 = h_OnDeepCSVprobb->Integral(1,20);	
 	h_OnDeepCSVprobb->Draw("E0 same");
 	h_OnDeepCSVprobb->SetMarkerStyle(20);
 	h_OnDeepCSVprobb->Scale(1/scale12);
@@ -844,14 +864,7 @@ gStyle->SetOptStat(0);
 	l.DrawLatex(0.15,0.81,"Online DeepCSV discriminator WP = 0.6");
 	cblah->Update();	
 
-	TCanvas *kop = new TCanvas("kop", "kop",50,50,1000,800);
-	h_all->Draw();
-	kop->Update();
 
-	TCanvas *kop1 = new TCanvas("kop1", "kop1",50,50,1000,800);
-	h_pass->Draw();
-	kop1->Update();
-	
 	TCanvas *cblah2 = new TCanvas("cblah2", "cblah2",50,50,1000,800);
 	h_eff2->Divide(h_pass2,h_all2,1,1);
 	h_eff2->SetNameTitle("CSV Turn on Curve", "CSV Turn on Curve");

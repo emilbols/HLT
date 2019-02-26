@@ -50,7 +50,7 @@ void korbinian(){
 				matches.push_back(9999);
 				continue;
 			}			
-       			double dRMin = 0.3;
+       			double dRMin = 0.1;
        			size_t index = 9999;			
 			for(int z = 0; z < offJets_num; z++){
 	 			double deta = offJets_eta[z] - pfJets_eta[n];
@@ -66,18 +66,39 @@ void korbinian(){
 			}
 		       	matches.push_back(index);
 		}
+		for(int n = 0; n < matches.size(); n++){
+			if(matches[n] == 9999){continue;}
+			for(int z = n+1; z < matches.size(); z++){
+				if(n == z | matches[z] == 9999){continue;}
+				if(matches[n] == matches[z]){
+					cout << "Jet nummer " << z << " har værdi = " << matches[z] << endl;
+					cout << "Jet nummer " << n << " har værdi = " << matches[n] << endl;
+				}
+			}			
+		}
+		std::vector<float> Vectorjets;
 		for(int n = 0; n < pfJets_num; n++){
 			if(pfJets_pt[n] < 30.0){continue;}
 			if((OnDeepCSV[n] < -5)){continue;}
 			if(abs(pfJets_eta[n]) > 2.4){continue;}
 			if(matches[n] == 9999){continue;}
+			Vectorjets.push_back(OnDeepCSV[n]);
 			//cout << i << " nr jet = " << n << " og værdi = " << OnDeepCSV[n] << endl; 
 			if(OnDeepCSV[n] > 0.6){
 				h_pass->Fill(OffDeepCSV[matches[n]]);
 			}
 			h_all->Fill(OffDeepCSV[matches[n]]);		
 		}
-
+		for(int n = 0; n < Vectorjets.size(); n++){
+			if(Vectorjets[n] == 0 | Vectorjets[n] == (-20)){continue;}
+			for(int z = n+1; z < Vectorjets.size(); z++){
+				if(Vectorjets[z] == 0 | Vectorjets[z] == (-20) | n == z){continue;}
+				if(Vectorjets[n] == Vectorjets[z]){
+					cout << "Jet nummer " << z << " har værdi = " << Vectorjets[z] << endl;
+					cout << "Jet nummer " << n << " har værdi = " << Vectorjets[n] << endl;
+				}
+			}			
+		}
 		for(int n = 0; n < pfJets_num; n++){
 			if(matchOff[n] < 0){continue;}
 			if(abs(pfJets_eta[n]) > 2.4){continue;}
